@@ -1,0 +1,7 @@
+{
+    "Lua.workspace.checkThirdParty": false,
+    "Lua.diagnostics.globals": ["vim"],
+    "Lua.runtime.version": "LuaJIT",
+    "Lua.workspace.library": ["~/.config/nvim"]
+}
+

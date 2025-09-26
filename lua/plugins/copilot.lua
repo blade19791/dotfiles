@@ -1,0 +1,23 @@
+return { -- Copilot main plugin
+    -- {
+    --     "github/copilot.vim",
+    --     event = "InsertEnter"
+    -- }, -- Copilot chat (needs node >= 18 and gh-cli authenticated)
+    -- {
+    --     "CopilotC-Nvim/CopilotChat.nvim",
+    --     dependencies = {{"github/copilot.vim"}, {"nvim-lua/plenary.nvim"}},
+    --     build = "make tiktoken", -- optional, better performance
+    --     config = function()
+    --         require("CopilotChat").setup {
+    --             window = {
+    --                 layout = "float",
+    --                 relative = "editor",
+    --                 width = 0.8,
+    --                 height = 0.8,
+    --                 row = 0.1,
+    --                 col = 0.1
+    --             }
+    --         }
+    --     end
+    -- }
+}
