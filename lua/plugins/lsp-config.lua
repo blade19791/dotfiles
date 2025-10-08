@@ -23,14 +23,14 @@ return {
 		end,
 	},
 
-	-- LSP configuration
+	-- LSP configuration (modern, lazy-loaded)
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPre", "BufNewFile" },
 		config = function()
-			local lspconfig = require("lspconfig")
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-			-- Common on_attach for all servers
+			-- Common function for all servers
 			local on_attach = function(_, bufnr)
 				local opts = { noremap = true, silent = true, buffer = bufnr }
 
@@ -42,44 +42,11 @@ return {
 				vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 				vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
 
-				--[[
-				vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-				vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-				vim.keymap.set("n", "<leader>oe", vim.diagnostic.open_float, opts)
-				vim.keymap.set("n", "<leader>sq", vim.diagnostic.setloclist, opts)
-				--]]
-
-				-- Diagnostics keymaps
-				vim.keymap.set(
-					"n",
-					"<leader>do",
-					vim.diagnostic.open_float,
-					{ desc = "Show diagnostic in popup", buffer = bufnr }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>dn",
-					vim.diagnostic.goto_next,
-					{ desc = "Next diagnostic", buffer = bufnr }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>dp",
-					vim.diagnostic.goto_prev,
-					{ desc = "Previous diagnostic", buffer = bufnr }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>dl",
-					vim.diagnostic.setloclist,
-					{ desc = "Diagnostics to location list", buffer = bufnr }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>dc",
-					vim.diagnostic.config,
-					{ desc = "Configure diagnostics", buffer = bufnr }
-				)
+				-- Diagnostics
+				vim.keymap.set("n", "<leader>do", vim.diagnostic.open_float, { buffer = bufnr })
+				vim.keymap.set("n", "<leader>dn", vim.diagnostic.goto_next, { buffer = bufnr })
+				vim.keymap.set("n", "<leader>dp", vim.diagnostic.goto_prev, { buffer = bufnr })
+				vim.keymap.set("n", "<leader>dl", vim.diagnostic.setloclist, { buffer = bufnr })
 
 				-- Format on save
 				vim.api.nvim_create_autocmd("BufWritePre", {
@@ -90,43 +57,79 @@ return {
 				})
 			end
 
-			-- Lua (fix scanning issue)
-			lspconfig.lua_ls.setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-				root_dir = function(fname)
-					local util = require("lspconfig.util")
-					return util.find_git_ancestor(fname)
-						or util.root_pattern("init.lua", "lua")(fname)
-						or vim.fn.getcwd()
-				end,
-				settings = {
-					Lua = {
-						runtime = { version = "LuaJIT" },
-						diagnostics = { globals = { "vim" } },
-						workspace = {
-							checkThirdParty = false,
-							library = vim.api.nvim_get_runtime_file("", true),
+			-- Server definitions
+			local servers = {
+				lua_ls = {
+					filetypes = { "lua" },
+					on_attach = on_attach,
+					capabilities = capabilities,
+					root_dir = function(fname)
+						local util = require("lspconfig.util")
+						return util.find_git_ancestor(fname)
+							or util.root_pattern("init.lua", "lua")(fname)
+							or vim.fn.getcwd()
+					end,
+					settings = {
+						Lua = {
+							runtime = { version = "LuaJIT" },
+							diagnostics = { globals = { "vim" } },
+							workspace = {
+								checkThirdParty = false,
+								library = vim.api.nvim_get_runtime_file("", true),
+							},
+							telemetry = { enable = false },
 						},
-						telemetry = { enable = false },
 					},
 				},
-			})
+				html = {
+					filetypes = { "html" },
+					on_attach = on_attach,
+					capabilities = capabilities,
+				},
+				cssls = {
+					filetypes = { "css", "scss", "less" },
+					on_attach = on_attach,
+					capabilities = capabilities,
+				},
+				ts_ls = {
+					filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
+					on_attach = on_attach,
+					capabilities = capabilities,
+				},
+				intelephense = {
+					filetypes = { "php" },
+					on_attach = on_attach,
+					capabilities = capabilities,
+				},
+				pyright = {
+					filetypes = { "python" },
+					on_attach = on_attach,
+					capabilities = capabilities,
+				},
+				clangd = {
+					filetypes = { "c", "cpp", "objc", "objcpp" },
+					on_attach = on_attach,
+					capabilities = capabilities,
+				},
+				emmet_ls = {
+					filetypes = { "html", "css", "javascriptreact", "typescriptreact" },
+					on_attach = on_attach,
+					capabilities = capabilities,
+				},
+			}
 
-			-- Standard LSPs
-			lspconfig.html.setup({ on_attach = on_attach, capabilities = capabilities })
-			lspconfig.cssls.setup({ on_attach = on_attach, capabilities = capabilities })
-			lspconfig.ts_ls.setup({ on_attach = on_attach, capabilities = capabilities })
-			lspconfig.intelephense.setup({ on_attach = on_attach, capabilities = capabilities })
-			lspconfig.pyright.setup({ on_attach = on_attach, capabilities = capabilities })
-			lspconfig.clangd.setup({ on_attach = on_attach, capabilities = capabilities })
-			lspconfig.emmet_ls.setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-				filetypes = { "html", "css", "javascriptreact", "typescriptreact" },
-			})
+			-- Lazy-load LSPs per filetype
+			for name, config in pairs(servers) do
+				vim.api.nvim_create_autocmd("FileType", {
+					pattern = config.filetypes,
+					callback = function()
+						vim.lsp.config(name, config)
+						vim.lsp.start(vim.lsp.get_config(name))
+					end,
+				})
+			end
 
-			-- Java (special setup with jdtls)
+			-- Java (special setup)
 			local function setup_jdtls()
 				local jdtls_path = vim.fn.stdpath("data") .. "/mason/packages/jdtls"
 				local config = {
@@ -175,7 +178,7 @@ return {
 		end,
 	},
 
-	-- Extra Java support
+	-- Java extension
 	{
 		"mfussenegger/nvim-jdtls",
 		ft = "java",
