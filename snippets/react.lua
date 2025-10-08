@@ -5,29 +5,20 @@ local i = ls.insert_node
 local fmt = require("luasnip.extras.fmt").fmt
 
 return {
-
-	-- React functional component
+	-- Minimal React component
 	s(
-		{ trig = "rfc", dscr = "React functional component" },
+		{ trig = "rfc", dscr = "Minimal React component (no import, no fragment)" },
 		fmt(
 			[[
-      import React from 'react';
-
-      const {} = ({}) => {{
-        return (
-          <>
-            {}
-          </>
-        );
-      }};
+      const {} = ({{{}}}) => {}
 
       export default {};
     ]],
 			{
-				i(1, "ComponentName"),
-				i(2, "props"),
-				i(0, "/* content */"),
-				rep(1),
+				i(1, "ComponentName"), -- component name
+				i(2, "props"), -- destructured props
+				i(0, "/* content */"), -- component body (can be JSX directly)
+				rep(1), -- auto reuse component name in export
 			}
 		)
 	),

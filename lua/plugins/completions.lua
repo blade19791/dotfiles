@@ -14,6 +14,9 @@ return {
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 
+			-- Load friendly-snippets VSCode collection
+require("luasnip.loaders.from_vscode").lazy_load()
+
 			-- Load all custom snippets immediately
 			require("luasnip.loaders.from_lua").load({
 				paths = vim.fn.stdpath("config") .. "/snippets",

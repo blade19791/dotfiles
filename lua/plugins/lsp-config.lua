@@ -7,27 +7,21 @@ return {
 	{
 		"williamboman/mason-lspconfig.nvim",
 		config = function()
-			require("mason-lspconfig").setup({
+			local mason_lsp = require("mason-lspconfig")
+			mason_lsp.setup({
 				ensure_installed = {
 					"html",
 					"cssls",
-					"jdtls",
 					"ts_ls",
-					"intelephense",
 					"pyright",
 					"clangd",
-					"emmet_ls",
 					"lua_ls",
+					"emmet_ls",
+					"intelephense",
+					"jdtls",
 				},
 			})
-		end,
-	},
 
-	-- LSP configuration (modern, lazy-loaded)
-	{
-		"neovim/nvim-lspconfig",
-		event = { "BufReadPre", "BufNewFile" },
-		config = function()
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 			local on_attach = function(_, bufnr)
@@ -56,107 +50,88 @@ return {
 				})
 			end
 
-			-- Server definitions
-			local servers = {
-				lua_ls = {
-					filetypes = { "lua" },
-					on_attach = on_attach,
-					capabilities = capabilities,
-					root_dir = function(fname)
-						local util = require("lspconfig.util")
-						return util.find_git_ancestor(fname)
-							or util.root_pattern("init.lua", "lua")(fname)
-							or vim.fn.getcwd()
-					end,
-					settings = {
-						Lua = {
-							runtime = { version = "LuaJIT" },
-							diagnostics = { globals = { "vim" } },
-							workspace = {
-								checkThirdParty = false,
-								library = vim.api.nvim_get_runtime_file("", true),
-							},
-							telemetry = { enable = false },
-						},
-					},
-				},
-				html = { filetypes = { "html" }, on_attach = on_attach, capabilities = capabilities },
-				cssls = { filetypes = { "css", "scss", "less" }, on_attach = on_attach, capabilities = capabilities },
-				ts_ls = {
-					filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
-					on_attach = on_attach,
-					capabilities = capabilities,
-				},
-				intelephense = { filetypes = { "php" }, on_attach = on_attach, capabilities = capabilities },
-				pyright = { filetypes = { "python" }, on_attach = on_attach, capabilities = capabilities },
-				clangd = {
-					filetypes = { "c", "cpp", "objc", "objcpp" },
-					on_attach = on_attach,
-					capabilities = capabilities,
-				},
-				emmet_ls = {
-					filetypes = { "html", "css", "javascriptreact", "typescriptreact" },
-					on_attach = on_attach,
-					capabilities = capabilities,
-				},
-			}
+			local lspconfig = require("lspconfig")
 
-			-- Lazy-load LSPs per filetype
-			for name, config in pairs(servers) do
+			-- Safe root_dir helper to avoid Neo-tree errors
+			local function safe_root_dir(fname, patterns)
+				if type(fname) ~= "string" then
+					return vim.loop.cwd()
+				end
+				local util = require("lspconfig.util")
+				return util.find_git_ancestor(fname)
+					or (patterns and util.root_pattern(unpack(patterns))(fname))
+					or vim.loop.cwd()
+			end
+
+			-- Auto-register Mason-installed servers
+			for _, server in ipairs(mason_lsp.get_installed_servers()) do
+				local ok, cfg = pcall(require, "lspconfig.server_configurations." .. server)
+				local filetypes = ok and cfg.filetypes or { server }
+
 				vim.api.nvim_create_autocmd("FileType", {
-					pattern = config.filetypes,
+					pattern = filetypes,
 					callback = function()
-						vim.lsp.config(name, config)
-						-- Removed vim.lsp.start(...) — not needed
+						-- Special settings for lua_ls
+						local settings = nil
+						local root = nil
+						if server == "lua_ls" then
+							root = safe_root_dir(vim.api.nvim_buf_get_name(0), { "init.lua", "lua" })
+							settings = {
+								Lua = {
+									runtime = { version = "LuaJIT" },
+									diagnostics = { globals = { "vim" } },
+									workspace = {
+										checkThirdParty = false,
+										library = vim.api.nvim_get_runtime_file("", true),
+									},
+									telemetry = { enable = false },
+								},
+							}
+						end
+
+						lspconfig[server].setup({
+							on_attach = on_attach,
+							capabilities = capabilities,
+							filetypes = filetypes,
+							root_dir = root or safe_root_dir,
+							settings = settings,
+						})
 					end,
 				})
 			end
 
 			-- Java setup (nvim-jdtls)
-			local function setup_jdtls()
-				local jdtls_path = vim.fn.stdpath("data") .. "/mason/packages/jdtls"
-				local config = {
-					cmd = {
-						"java",
-						"-Declipse.application=org.eclipse.jdt.ls.core.id1",
-						"-Dosgi.bundles.defaultStartLevel=4",
-						"-Declipse.product=org.eclipse.jdt.ls.core.product",
-						"-Dlog.protocol=true",
-						"-Dlog.level=ALL",
-						"-Xms1g",
-						"--add-modules=ALL-SYSTEM",
-						"--add-opens",
-						"java.base/java.util=ALL-UNNAMED",
-						"--add-opens",
-						"java.base/java.lang=ALL-UNNAMED",
-						"-jar",
-						vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar"),
-						"-configuration",
-						jdtls_path .. "/config_linux",
-						"-data",
-						vim.fn.stdpath("cache") .. "/jdtls-workspace",
-					},
-					root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew" }),
-					settings = {
-						java = {
-							configuration = {
-								runtimes = {
-									{ name = "JavaSE-17", path = "/usr/lib/jvm/java-17-openjdk" },
-									{ name = "JavaSE-11", path = "/usr/lib/jvm/java-11-openjdk" },
-									{ name = "JavaSE-1.8", path = "/usr/lib/jvm/java-8-openjdk" },
-								},
-							},
-						},
-					},
-					on_attach = on_attach,
-					capabilities = capabilities,
-				}
-				require("jdtls").start_or_attach(config)
-			end
-
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = "java",
-				callback = setup_jdtls,
+				callback = function()
+					local jdtls_path = vim.fn.stdpath("data") .. "/mason/packages/jdtls"
+					local config = {
+						cmd = {
+							"java",
+							"-Declipse.application=org.eclipse.jdt.ls.core.id1",
+							"-Dosgi.bundles.defaultStartLevel=4",
+							"-Declipse.product=org.eclipse.jdt.ls.core.product",
+							"-Dlog.protocol=true",
+							"-Dlog.level=ALL",
+							"-Xms1g",
+							"--add-modules=ALL-SYSTEM",
+							"--add-opens",
+							"java.base/java.util=ALL-UNNAMED",
+							"--add-opens",
+							"java.base/java.lang=ALL-UNNAMED",
+							"-jar",
+							vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar"),
+							"-configuration",
+							jdtls_path .. "/config_linux",
+							"-data",
+							vim.fn.stdpath("cache") .. "/jdtls-workspace",
+						},
+						root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew" }),
+						on_attach = on_attach,
+						capabilities = capabilities,
+					}
+					require("jdtls").start_or_attach(config)
+				end,
 			})
 		end,
 	},
