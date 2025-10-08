@@ -14,15 +14,15 @@ return {
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 
-			-- Make JS + React snippets available across related filetypes
+			-- Load all custom snippets immediately
+			require("luasnip.loaders.from_lua").load({
+				paths = vim.fn.stdpath("config") .. "/snippets",
+			})
+
+			-- Make JS + React snippets available in related filetypes
 			luasnip.filetype_extend("javascriptreact", { "javascript", "react" })
 			luasnip.filetype_extend("typescript", { "javascript" })
 			luasnip.filetype_extend("typescriptreact", { "javascript", "react" })
-
-			-- Load custom snippets lazily per filetype
-			require("luasnip.loaders.from_lua").lazy_load({
-				paths = vim.fn.stdpath("config") .. "/snippets/",
-			})
 
 			cmp.setup({
 				snippet = {
@@ -41,7 +41,12 @@ return {
 					-- VS Code–like Tab behavior
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
-							cmp.confirm({ select = true })
+							local entry = cmp.get_selected_entry()
+							if entry then
+								cmp.confirm({ select = true })
+							else
+								cmp.select_next_item()
+							end
 						elseif luasnip.expand_or_locally_jumpable() then
 							luasnip.expand_or_jump()
 						else
@@ -59,8 +64,8 @@ return {
 				}),
 
 				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
+					{ name = "nvim_lsp" },
 				}, {
 					{ name = "buffer" },
 					{ name = "path" },

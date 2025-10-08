@@ -10,6 +10,13 @@ if not string.find(vim.env.PATH, mason_bin, 1, true) then
 	vim.env.PATH = mason_bin .. ":" .. vim.env.PATH
 end
 
+--[[ this reloads all snippets form ~/.config/nvim/snippets
+instead of write this command ":lua require("luasnip.loaders.from_lua").load({ paths = vim.fn.stdpath("config") .. "/snippets" })]]
+vim.api.nvim_create_user_command("ReloadSnippets", function()
+	require("luasnip.loaders.from_lua").load({ paths = vim.fn.stdpath("config") .. "/snippets" })
+	print("LuaSnip snippets reloaded ✅")
+end, {})
+
 -- Bootstrap lazy.nvim, LazyVim and your plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then

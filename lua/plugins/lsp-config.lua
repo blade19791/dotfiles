@@ -30,7 +30,6 @@ return {
 		config = function()
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-			-- Common function for all servers
 			local on_attach = function(_, bufnr)
 				local opts = { noremap = true, silent = true, buffer = bufnr }
 
@@ -81,31 +80,15 @@ return {
 						},
 					},
 				},
-				html = {
-					filetypes = { "html" },
-					on_attach = on_attach,
-					capabilities = capabilities,
-				},
-				cssls = {
-					filetypes = { "css", "scss", "less" },
-					on_attach = on_attach,
-					capabilities = capabilities,
-				},
+				html = { filetypes = { "html" }, on_attach = on_attach, capabilities = capabilities },
+				cssls = { filetypes = { "css", "scss", "less" }, on_attach = on_attach, capabilities = capabilities },
 				ts_ls = {
 					filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
 					on_attach = on_attach,
 					capabilities = capabilities,
 				},
-				intelephense = {
-					filetypes = { "php" },
-					on_attach = on_attach,
-					capabilities = capabilities,
-				},
-				pyright = {
-					filetypes = { "python" },
-					on_attach = on_attach,
-					capabilities = capabilities,
-				},
+				intelephense = { filetypes = { "php" }, on_attach = on_attach, capabilities = capabilities },
+				pyright = { filetypes = { "python" }, on_attach = on_attach, capabilities = capabilities },
 				clangd = {
 					filetypes = { "c", "cpp", "objc", "objcpp" },
 					on_attach = on_attach,
@@ -124,12 +107,12 @@ return {
 					pattern = config.filetypes,
 					callback = function()
 						vim.lsp.config(name, config)
-						vim.lsp.start(vim.lsp.get_config(name))
+						-- Removed vim.lsp.start(...) — not needed
 					end,
 				})
 			end
 
-			-- Java (special setup)
+			-- Java setup (nvim-jdtls)
 			local function setup_jdtls()
 				local jdtls_path = vim.fn.stdpath("data") .. "/mason/packages/jdtls"
 				local config = {
