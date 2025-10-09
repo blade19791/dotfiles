@@ -1,22 +1,28 @@
+-- Create shorter alias
+local map = vim.keymap.set
+
+-- Define common options
+local opts = { noremap = true, silent = true }
+
 -- WINDOW NAVIGATION
-vim.keymap.set("n", "<C-l>", "<C-w>l", {
+map("n", "<C-l>", "<C-w>l", {
 	desc = "Move to right window",
 })
-vim.keymap.set("n", "<C-h>", "<C-w>h", {
+map("n", "<C-h>", "<C-w>h", {
 	desc = "Move to left window",
 })
-vim.keymap.set("n", "<C-k>", "<C-w>k", {
+map("n", "<C-k>", "<C-w>k", {
 	desc = "Move to up window",
 })
-vim.keymap.set("n", "<C-j>", "<C-w>j", {
+map("n", "<C-j>", "<C-w>j", {
 	desc = "Move to down window",
 })
 
 -- INSERT MODE EXIT
-vim.keymap.set("i", "jk", "<Esc>", {
+map("i", "jk", "<Esc>", {
 	desc = "Exit insert mode",
 })
-vim.keymap.set("i", "kj", "<Esc>", {
+map("i", "kj", "<Esc>", {
 	desc = "Exit insert mode",
 })
 
@@ -31,62 +37,62 @@ vim.keymap.set("i", "kj", "<Esc>", {
 
 -- QUALITY OF LIFE
 -- Save and quit
-vim.keymap.set("n", "<leader>w", ":w<CR>", {
+map("n", "<leader>w", ":w<CR>", {
 	desc = "Save file",
 })
-vim.keymap.set("n", "<leader>q", ":q<CR>", {
+map("n", "<leader>q", ":q<CR>", {
 	desc = "Quit window",
 })
-vim.keymap.set("n", "<leader>Q", ":q!<CR>", {
+map("n", "<leader>Q", ":q!<CR>", {
 	desc = "Force quit",
 })
 
 -- Buffer navigation
-vim.keymap.set("n", "<S-l>", ":bnext<CR>", {
+map("n", "<S-l>", ":bnext<CR>", {
 	desc = "Next buffer",
 })
-vim.keymap.set("n", "<S-h>", ":bprevious<CR>", {
+map("n", "<S-h>", ":bprevious<CR>", {
 	desc = "Previous buffer",
 })
-vim.keymap.set("n", "<leader>bb", ":bdelete<CR>", { desc = "Close current buffer" })
+map("n", "<leader>bb", ":bdelete<CR>", { desc = "Close current buffer" })
 
 -- Clear search highlight
-vim.keymap.set("n", "<leader>nh", ":nohlsearch<CR>", {
+map("n", "<leader>nh", ":nohlsearch<CR>", {
 	desc = "Clear search highlights",
 })
 
 -- Better indent in visual mode
-vim.keymap.set("v", "<", "<gv", {
+map("v", "<", "<gv", {
 	desc = "Indent left and keep selection",
 })
-vim.keymap.set("v", ">", ">gv", {
+map("v", ">", ">gv", {
 	desc = "Indent right and keep selection",
 })
 
 -- Close current buffer
-vim.keymap.set("n", "<leader>c", ":bd<CR>", {
+map("n", "<leader>c", ":bd<CR>", {
 	desc = "Close buffer",
 })
 
 -- Move lines up/down in normal & visual mode
-vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", {
+map("n", "<A-j>", ":m .+1<CR>==", {
 	desc = "Move line down",
 })
-vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", {
+map("n", "<A-k>", ":m .-2<CR>==", {
 	desc = "Move line up",
 })
-vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", {
+map("v", "<A-j>", ":m '>+1<CR>gv=gv", {
 	desc = "Move selection down",
 })
-vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", {
+map("v", "<A-k>", ":m '<-2<CR>gv=gv", {
 	desc = "Move selection up",
 })
 
 -- Keep cursor centered when jumping
-vim.keymap.set("n", "n", "nzzzv", {
+map("n", "n", "nzzzv", {
 	desc = "Next search result centered",
 })
-vim.keymap.set("n", "N", "Nzzzv", {
+map("n", "N", "Nzzzv", {
 	desc = "Prev search result centered",
 })
 vim.keymap.set("n", "J", "mzJ`z", {
@@ -94,25 +100,25 @@ vim.keymap.set("n", "J", "mzJ`z", {
 })
 
 -- Window management
-vim.keymap.set("n", "<leader>v", "<C-w>v", opts) -- split window vertically
-vim.keymap.set("n", "<leader>h", "<C-w>s", opts) -- split window horizontally
-vim.keymap.set("n", "<leader>se", "<C-w>=", opts) -- make split windows equal width & height
-vim.keymap.set("n", "<leader>xs", ":close<CR>", opts) -- close current split window
+map("n", "<leader>v", "<C-w>v", opts) -- split window vertically
+map("n", "<leader>h", "<C-w>s", opts) -- split window horizontally
+map("n", "<leader>se", "<C-w>=", opts) -- make split windows equal width & height
+map("n", "<leader>xs", ":close<CR>", opts) -- close current split window
 
 -- Tabs
-vim.keymap.set("n", "<leader>to", ":tabnew<CR>", opts) -- open new tab
-vim.keymap.set("n", "<leader>tc", ":tabclose<CR>", opts) -- close current tab
-vim.keymap.set("n", "<leader>tn", ":tabn<CR>", opts) --  go to next tab
-vim.keymap.set("n", "<leader>tp", ":tabp<CR>", opts) --  go to previous tab
+map("n", "<leader>to", ":tabnew<CR>", opts) -- open new tab
+map("n", "<leader>tc", ":tabclose<CR>", opts) -- close current tab
+map("n", "<leader>tn", ":tabn<CR>", opts) --  go to next tab
+map("n", "<leader>tp", ":tabp<CR>", opts) --  go to previous tab
 
 -- Toggle line wrapping
-vim.keymap.set("n", "<leader>lw", "<cmd>set wrap!<CR>", opt)
+map("n", "<leader>lw", "<cmd>set wrap!<CR>", opts)
 
 -- Resize with arrows
-vim.keymap.set("n", "<Up>", ":resize -2<CR>", opts)
-vim.keymap.set("n", "<Down>", ":resize +2<CR>", opts)
-vim.keymap.set("n", "<Left>", ":vertical resize -2<CR>", opts)
-vim.keymap.set("n", "<Right>", ":vertical resize +2<CR>", opts)
+map("n", "<Up>", ":resize -2<CR>", opts)
+map("n", "<Down>", ":resize +2<CR>", opts)
+map("n", "<Left>", ":vertical resize -2<CR>", opts)
+map("n", "<Right>", ":vertical resize +2<CR>", opts)
 
 -- terminal shortcut
 -- Open a terminal in a new horizontal split with <leader>t
@@ -140,7 +146,7 @@ local function toggle_terminal()
 	end
 end
 
-vim.keymap.set("n", "<leader>t", toggle_terminal, opts)
+map("n", "<leader>t", toggle_terminal, opts)
 
 -- Exit terminal mode with jk
 vim.api.nvim_set_keymap("t", "jk", "<C-\\><C-n>", {
@@ -149,7 +155,7 @@ vim.api.nvim_set_keymap("t", "jk", "<C-\\><C-n>", {
 })
 
 -- Reload Neovim config without restarting
-vim.keymap.set("n", "<leader>cr", function()
+map("n", "<leader>cr", function()
 	for name, _ in pairs(package.loaded) do
 		if name:match("^user") or name:match("^plugins") then
 			package.loaded[name] = nil
@@ -161,12 +167,12 @@ end, {
 	desc = "Reload Neovim config",
 })
 
--- Toggle next theme
-vim.keymap.set("n", "<leader>tt", function()
-	require("core.themes").next()
-end, { desc = "Toggle themes" })
-
--- Pick theme via Telescope
-vim.keymap.set("n", "<leader>ft", function()
-	require("core.themes").pick()
-end, { desc = "Pick theme (Telescope)" })
+-- -- Toggle next theme
+-- vim.keymap.set("n", "<leader>tt", function()
+-- 	require("core.themes").next()
+-- end, { desc = "Toggle themes" })
+--
+-- -- Pick theme via Telescope
+-- vim.keymap.set("n", "<leader>ft", function()
+-- 	require("core.themes").pick()
+-- end, { desc = "Pick theme (Telescope)" })
