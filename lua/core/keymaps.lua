@@ -26,14 +26,14 @@ map("i", "kj", "<Esc>", {
 	desc = "Exit insert mode",
 })
 
--- COPILOT
+-- -- COPILOT
 -- vim.g.copilot_no_tab_map = true
 -- vim.api.nvim_set_keymap("i", "<Tab>", 'copilot#Accept("<Tab>")', { silent = true, expr = true }) -- Accept suggestion
 -- vim.api.nvim_set_keymap("i", "<C-]>", "<Plug>(copilot-next)", {}) -- Next suggestion
 -- vim.api.nvim_set_keymap("i", "<C-[>", "<Plug>(copilot-previous)", {}) -- Previous suggestion
 -- vim.api.nvim_set_keymap("i", "<C-\\>", "<Plug>(copilot-suggest)", {}) -- Trigger suggestion
 -- vim.api.nvim_set_keymap("i", "<C-e>", "<Plug>(copilot-dismiss)", {}) -- Dismiss suggestion
--- vim.keymap.set('n', '<leader>cp', ':Copilot toggle<CR>', { desc = 'Toggle Copilot' })
+-- vim.keymap.set("n", "<leader>cp", ":Copilot toggle<CR>", { desc = "Toggle Copilot" })
 
 -- QUALITY OF LIFE
 -- Save and quit
