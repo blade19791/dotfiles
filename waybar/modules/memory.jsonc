@@ -1,0 +1,6 @@
+{
+    "memory": {
+        "format": "M {used:0.1f}G",
+        "tooltip": true
+    }
+}

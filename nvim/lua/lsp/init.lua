@@ -5,37 +5,27 @@ local M = {}
 -- 🧠 Diagnostics Styling
 -- ======================
 
--- Custom icons for signs
-local signs = {
-	Error = " ",
-	Warn = " ",
-	Hint = " ",
-	Inffo = " ",
-}
-
-for type, icon in pairs(signs) do
-	local hl = "DiagnosticSign" .. type
-	vim.fn.sign_define(hl, {
-		text = icon,
-		texthl = hl,
-		numhl = "",
-	})
-end
-
 -- Diagnostic config (modern Neovim 0.11+)
 vim.diagnostic.config({
 	virtual_text = {
 		prefix = "●",
 		spacing = 4,
 	},
-	signs = true,
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = " ",
+			[vim.diagnostic.severity.WARN] = " ",
+			[vim.diagnostic.severity.HINT] = " ",
+			[vim.diagnostic.severity.INFO] = " ",
+		},
+	},
 	underline = true,
 	update_in_insert = false,
 	severity_sort = true,
 	float = {
 		border = "rounded",
 		source = "if_many",
-		stylee = "minimal",
+		style = "minimal",
 	},
 })
 
@@ -68,12 +58,12 @@ M.on_attach = function(client, bufnr)
 	keymap("n", "<leader>rn", vim.lsp.buf.rename, opts)
 	keymap("n", "<leader>ca", vim.lsp.buf.code_action, opts)
 	keymap("n", "[d", function()
-		vim.diagnostic.juump({
+		vim.diagnostic.jump({
 			count = -1,
 		})
 	end, opts)
 	keymap("n", "]d", function()
-		vim.diagnostic.jjump({
+		vim.diagnostic.jump({
 			count = 1,
 		})
 	end, opts)
@@ -82,11 +72,11 @@ M.on_attach = function(client, bufnr)
 
 	-- Optional: Format command
 	vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
-		vim.lsp.buf.formatt({
+		vim.lsp.buf.format({
 			async = true,
 		})
 	end, {
-		desc = "Formmat current buffer",
+		desc = "Format current buffer",
 	})
 
 	-- Optional: Autoformat on save

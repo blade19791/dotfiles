@@ -1,0 +1,11 @@
+{
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "format-icons": {
+        },
+       "persistent-workspaces": {
+             "*": 5,
+             "HDMI-A-1": 3
+       }
+    }
+}

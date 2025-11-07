@@ -1,0 +1,7 @@
+{
+    "disk": {
+        "path": "/",
+        "format": "D {percentage_used}%",
+        "tooltip": true
+    }
+}

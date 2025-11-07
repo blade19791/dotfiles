@@ -1,0 +1,117 @@
+/* ============================================
+   Waybar Style — Pywal Integrated Version
+   ============================================ */
+
+/* Import Pywal-generated colors dynamically */
+@import url("file:///home/blade/.cache/wal/colors-waybar.css");
+
+/* Base font and text settings */
+* {
+  font-family: "JetBrainsMono Nerd Font", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Waybar window */
+window#waybar {
+  background: transparent;
+  color: @color7;
+  transition: all 0.3s ease;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+/* Workspaces */
+#workspaces button {
+  background: @color0;
+  color: @color7;
+  border: 2px solid @color2;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: 0 3px;
+  transition: all 0.25s ease;
+}
+
+#workspaces button.active {
+  background: @color2;
+  color: @color0;
+  border-radius: 12px;
+  padding: 4px 14px;
+}
+
+#workspaces button:hover {
+  background: @color2;
+  color: @color0;
+}
+
+#workspaces button.empty {
+  color: @color2;
+}
+
+#workspaces button.empty:hover {
+  color: @color0;
+}
+
+#workspaces button.empty.active {
+  color: @color0;
+}
+
+/* Favorite modules */
+#clock,
+#battery,
+#pulseaudio,
+#power-profiles-daemon,
+#backlight,
+#custom-launcher {
+  padding: 4px 14px;
+  margin: 0 3px;
+  border: 2px solid @color7;
+  border-radius: 8px;
+  background: @color0;
+  color: @color7;
+}
+
+/* Battery states */
+#battery.charging {
+  color: @color2;
+}
+
+#battery.good {
+  color: #c3e88d;
+}
+
+#battery.warning {
+  color: yellow;
+}
+
+#battery.critical {
+  color: #ff6666;
+}
+
+/* Network */
+#network {
+  font-size: 15px;
+}
+
+#network.disconnected {
+  color: #ff6666;
+}
+
+/* Mode and idle inhibitor */
+#mode,
+#idle_inhibitor {
+  background: rgba(0, 255, 200, 0.1);
+  color: @color2;
+}
+
+/* Focus and poweroff button */
+label:focus {
+  background: transparent;
+}
+
+#custom-poweroff {
+  font-size: 18px;
+  margin-right: 6px;
+}

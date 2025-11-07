@@ -1,0 +1,8 @@
+{
+	"custom/launcher": {
+    "format": "Apps",
+    "tooltip": "Open launcher",
+    "on-click": "~/.config/waybar/scripts/launcher.sh",
+    "class": "launcher"
+  }
+}

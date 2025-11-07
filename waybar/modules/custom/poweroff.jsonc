@@ -1,0 +1,7 @@
+{
+	"custom/poweroff": {
+    "format": "",
+    "tooltip": "poweroff",
+    "on-click": "wlogout",
+  }
+}

@@ -1,0 +1,46 @@
+{
+    "include": [
+        "~/.config/waybar/modules/system.jsonc",
+        "~/.config/waybar/modules/network.jsonc",
+		"~/.config/waybar/modules/battery.jsonc",
+        "~/.config/waybar/modules/backlight.jsonc",
+        "~/.config/waybar/modules/workspaces.jsonc",
+        "~/.config/waybar/modules/media.jsonc",
+        "~/.config/waybar/modules/clock.jsonc",
+        "~/.config/waybar/modules/disk.jsonc",
+        "~/.config/waybar/modules/cpu.jsonc",
+        "~/.config/waybar/modules/memory.jsonc",
+		"~/.config/waybar/modules/temperature.jsonc",
+		"~/.config/waybar/modules/custom/launcher.jsonc",
+		"~/.config/waybar/modules/custom/separator.jsonc",
+		"~/.config/waybar/modules/custom/poweroff.jsonc"
+    ],
+
+    "layer": "top",
+    "position": "top",
+	"hieght": "40",
+	"margin-top": 10,
+    "margin-left": 12,
+    "margin-right": 12,
+    "spacing": 6,
+
+    "modules-left": [
+        "custom/launcher",
+		"hyprland/workspaces"
+    ],
+    "modules-center": [
+    ],
+    "modules-right": [
+		"backlight",
+        "battery",
+		"network",
+		"custom/poweroff",
+	    "clock"
+    ],
+
+	"group/hardware": {
+		"orientation": "horizontal",
+		"modules": ["disk", "custom/separator", "cpu", "custom/separator", "memory", "custom/separator", "temperature"]
+	},
+
+}
